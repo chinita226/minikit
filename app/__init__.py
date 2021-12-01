@@ -70,21 +70,52 @@ def csv_to_json(csvFile, json_path):
                 jsonf.write(jsonString)
                 uploadJson=json_path
                 tkinter.messagebox.showinfo("Successful.", "Json file created.")
+                json_text(uploadJson)
         else:
             tkinter.messagebox.showinfo("Error.", "Make sure that your file name contains .json.")
 
+
+def json_text(json_filename):
+    with open(json_filename, encoding="UTF-8") as f:
+         data = json.load(f)
+
+    new_data = json.dumps(data, indent=3, ensure_ascii=False)
+    window.geometry("600x600")
+    json_frame = Frame(window, width=600, height=600)
+    text = Text(json_frame,state = 'normal')
+    text.insert('1.0',str(new_data))
+    json_frame.pack()
+    text.pack()
+    
 def browseFiles(label_file_explorer):
     browseFiles.filename = filedialog.askopenfilename(initialdir = "/",title = "Select a File",filetypes = (("CSV file", "*.csv*"),("CSV file", "*.csv*")))
     label_file_explorer.configure(text = browseFiles.filename)
 
+
+def upload():
+    url = "https://api.quickbutik.com/v1/products"
+    with open(uploadJson, encoding="UTF-8") as json_file:
+        json_data = json.load(json_file)
+    #print(json_data)
+    #req = requests.get('https://api.quickbutik.com/v1/products', auth=HTTPBasicAuth(userName.get(), passWord.get()))
+    #print(req.status_code)
+    upload = requests.post(url, json=json_data, auth=HTTPBasicAuth(userName.get(), passWord.get()))
+    
+    print(upload.content)
+    
+    """
+    if upload.json()['code'] == 401:
+        print("Error:", upload.json()['error'])
+    elif upload.status_code == 200:
+        if (upload.json()['notices']):
+
+        print("Successful.")
+    else:
+        print("Unknown error.")
+    """
+
+
 """Start from here to browse the json file."""
-def upload_to_server():
-    path_frame.pack_forget()
-    upload_frame = Frame(window, width=300, height=300).pack()
-    Label(upload_frame, text="Upload json to quickbuti server", bg="grey", width="300", height="2", font=('Calibri', 13)).pack()
-    Button(upload_frame, text = "Browse json file", width = 100, height = 1,fg = "black", command=upload).pack()
-
-
 jsonFile = str
 path_frame = Frame(window, width=300, height=300)
 Label(path_frame, text="Convert csv to json file", bg="grey", width="300", height="2", font=('Calibri', 13)).pack()
@@ -96,19 +127,8 @@ Label(path_frame, text = "Enter name for json file, must end with .json", width 
 theJson = Entry(path_frame, textvariable = jsonFile)
 theJson.pack()
 Button(path_frame, text = "Convert", command = lambda: csv_to_json(browseFiles.filename, theJson.get())).pack()   
-Button(path_frame, text="Upload to server!", command=upload_to_server).pack(padx=10,pady=10)
+Button(path_frame, text="Upload to server!", command=upload).pack(padx=10,pady=10)
 
-
-def upload():
-    #url = "https://api.quickbutik.com/v1/products"
-    #print(uploadJson)
-    with open('{uploadJson}') as json_file:
-        json_data = json.load(json_file)
-    print(json_data)
-    #upload = requests.post(url, json=json_data)
-    #print(upload.status_codes)
-
-#path_frame.pack()
 
 if __name__== "__main__":
     #main_window()
