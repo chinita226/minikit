@@ -48,7 +48,7 @@ def csv_to_json(csvFile, json_path):
     """Get csv file and export to json."""
     jsonArray = []
 
-    with open(csvFile, 'r', encoding='latin-1') as csvf:
+    with open(csvFile, 'r', encoding='UTF-8') as csvf:
         data = pd.read_csv(csvf)
     sku = data.sku
     title = data.title
